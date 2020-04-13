@@ -43,7 +43,7 @@ type CovidTS = {
     CaseRateTS :  Series<DateTime, float<Cases/``1000 Population``>>
 }
 
-
+/// Extension of the Series module from Deedle
 module Series =
     let tryFindFirst (predicate: 'K -> 'V -> bool) (series: Series<'K,'V>) =    
         let filtered = Series.filter predicate series
@@ -58,7 +58,8 @@ module Series =
         | true  -> None
         | false -> Some filtered
 
-
+/// This module collects data from the online CSV and
+/// prepares usable time series for each country
 module DataCollection =
  
     let (|Date|_|) (str: string) =
@@ -70,10 +71,13 @@ module DataCollection =
 
 
     type CovidData = FSharp.Data.CsvProvider<CsvFile, Schema = Schema, Culture = "en-HK">
+    
+    /// Collect csv lines with population not empty ot null
     let covidRows = 
         CovidData.Load(CsvFile).Rows
         |> Seq.filter (fun row -> row.PopData2018.GetValueOrDefault(0) > 0)
 
+    /// Array of countries (cf type Country above)
     let countries =
         covidRows
         |> Seq.distinctBy (fun row -> row.CountriesAndTerritories)
@@ -89,40 +93,46 @@ module DataCollection =
                     } )
         |> Seq.toArray
 
+
     let prepareData (country: Country) =
         covidRows
         |> Seq.filter (fun row -> row.CountryterritoryCode = country.Alpha3Code)
         |> Seq.sortBy (fun row -> row.DateRep)
 
+    /// Get time series of number of deaths
     let getDeathNbTimeSeries (country: Country) =
         country
         |> prepareData
         |> Seq.map (fun row -> row.DateRep, row.Deaths * 1.0<Deaths>)
         |> Series.ofObservations
 
+    /// Get time series of death rate
     let getDeathRateTimeSeries (country: Country) =
         country
         |> getDeathNbTimeSeries
         |> Stats.expandingSum
         |> Series.mapValues (fun death -> death * 1.0<Deaths> / country.Population)
 
+    /// Get time series of number of cases
     let getCaseNbTimeSeries (country: Country) =
         country
         |> prepareData
         |> Seq.map (fun row -> row.DateRep, row.Cases * 1.0<Cases>)
         |> Series.ofObservations
 
+    /// Get time series of case rate
     let getCaseRateTimeSeries (country: Country) =
         country
         |> getCaseNbTimeSeries
         |> Stats.expandingSum
         |> Series.mapValues (fun case -> case * 1.0<Cases> / country.Population)
 
-
+    /// Active pattern on Country
     let (|Country|_|) (str: string) =
         countries
         |> (Array.tryFind (fun c -> c.Alpha2Code = str || c.Alpha3Code = str || c.Name = str))
 
+    /// Prepare CovidTS data for a given country
     let calcTimeSerie (country: Country)=
         let deathTS = getDeathNbTimeSeries country
         let caseTS = getCaseNbTimeSeries country 
@@ -137,10 +147,12 @@ module DataCollection =
             CaseRateTS = getCaseRateTimeSeries country
         }
 
+    /// Array of CovidTS for all countries
     let covidData =
         countries
         |> Array.Parallel.map calcTimeSerie
 
+    /// Return an option CovidTS given a country
     let getCovidData (country: Country) =
         covidData
         |> Array.tryFind (fun c -> c.Country = country)
