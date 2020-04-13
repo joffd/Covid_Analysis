@@ -6,6 +6,7 @@ open DataCollection
 
 fsi.AddPrinter<DateTime>(fun dt -> dt.ToShortDateString())
 
+/// Helper function within the pipeline
 let (|-*>) (list: List<'T * 'U>) (f: 'U -> 'V option) =
     let pairOption g (a,b) =
         match (a, g b) with
@@ -14,9 +15,13 @@ let (|-*>) (list: List<'T * 'U>) (f: 'U -> 'V option) =
     list
     |> List.choose (pairOption f)
 
+
+/// List of countries for the analysis
 let countriesToAnalyse =
     ["FRA" ; "ESP" ; "ITA" ; "USA" ; "POR" ; "GBR" ; "NLD" ; "DE" ; "Belgium"]
 
+
+/// Graph 1: Death rate
 let graphDeathRate =
     countriesToAnalyse
     |> List.map (fun x -> x, x)
@@ -31,6 +36,8 @@ let graphDeathRate =
 graphDeathRate
 |> Chart.Show
 
+
+/// Graph 2: Same start date
 let filterRule =
     fun _ v -> v >= 0.005<Deaths/``1000 Population``>
 
