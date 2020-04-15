@@ -2,7 +2,14 @@
 
 #load "DataCollection.fsx"
 
+
+open System
+open Deedle
+open FSharp.Data
+open XPlot.GoogleCharts
+
 open DataCollection
+
 
 fsi.AddPrinter<DateTime>(fun dt -> dt.ToShortDateString())
 
@@ -18,7 +25,7 @@ let (|-*>) (list: List<'T * 'U>) (f: 'U -> 'V option) =
 
 /// List of countries for the analysis
 let countriesToAnalyse =
-    ["FRA" ; "ESP" ; "ITA" ; "USA" ; "POR" ; "GBR" ; "NLD" ; "DE" ; "Belgium"]
+    ["FRA" ; "ESP" ; "ITA" ; "USA" ; "POR" ; "GBR" ; "NLD" ; "DE" ; "Belgium" ; "Sweden"]
 
 
 /// Graph 1: Death rate

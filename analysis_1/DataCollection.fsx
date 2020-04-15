@@ -22,26 +22,6 @@ let Schema = "date,int,int,int,float,float,string,string,string,"
 let Culture = "en-HK"
 
 
-type [<Measure>] ``1000 Population``
-type [<Measure>] Deaths
-type [<Measure>] Cases
-
-type Country = {
-    Alpha2Code: string
-    Alpha3Code: string
-    Name: string
-    Population: float<``1000 Population``>
-}
-
-type CovidTS = {
-    Country : Country
-    DeathTotal : float<Deaths>
-    CaseTotal : float<Cases>
-    DeathTS : Series<DateTime, float<Deaths>>
-    DeathRateTS :  Series<DateTime, float<Deaths/``1000 Population``>>
-    CaseTS :  Series<DateTime, float<Cases>>
-    CaseRateTS :  Series<DateTime, float<Cases/``1000 Population``>>
-}
 
 /// Extension of the Series module from Deedle
 module Series =
@@ -61,7 +41,29 @@ module Series =
 /// This module collects data from the online CSV and
 /// prepares usable time series for each country
 module DataCollection =
- 
+     
+    type [<Measure>] ``1000 Population``
+    type [<Measure>] Deaths
+    type [<Measure>] Cases
+
+    type Country = {
+        Alpha2Code: string
+        Alpha3Code: string
+        Name: string
+        Population: float<``1000 Population``>
+    }
+
+    type CovidTS = {
+        Country : Country
+        DeathTotal : float<Deaths>
+        CaseTotal : float<Cases>
+        DeathTS : Series<DateTime, float<Deaths>>
+        DeathRateTS :  Series<DateTime, float<Deaths/``1000 Population``>>
+        CaseTS :  Series<DateTime, float<Cases>>
+        CaseRateTS :  Series<DateTime, float<Cases/``1000 Population``>>
+    }
+
+
     let (|Date|_|) (str: string) =
         match (DateTime.TryParse(str)) with
         | (true, dt) -> Some dt
