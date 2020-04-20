@@ -10,7 +10,8 @@ open XPlot.GoogleCharts
 
 open DataCollection
 
-
+/// To show dates in a short format instead of the
+/// long .Net format
 fsi.AddPrinter<DateTime>(fun dt -> dt.ToShortDateString())
 
 /// Helper function within the pipeline
@@ -46,7 +47,7 @@ graphDeathRate
 
 /// Graph 2: Same start date
 let filterRule =
-    fun _ v -> v >= 0.005<Deaths/``1000 Population``>
+    fun _ v -> v >= 0.01<Deaths/``1000 Population``>
 
 let graphDeathRateSameStart =
     (countriesToAnalyse, countriesToAnalyse)
