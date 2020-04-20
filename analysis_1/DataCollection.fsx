@@ -69,9 +69,7 @@ module DataCollection =
         | (true, dt) -> Some dt
         | _ -> None
 
-
-
-
+    /// CSV Type provider
     type CovidData = FSharp.Data.CsvProvider<CsvFile, Schema = Schema, Culture = "en-HK">
     
     /// Collect csv lines with population not empty ot null
@@ -95,7 +93,7 @@ module DataCollection =
                     } )
         |> Seq.toArray
 
-
+    /// Take a country and return lines in the CSV
     let prepareData (country: Country) =
         covidRows
         |> Seq.filter (fun row -> row.CountryterritoryCode = country.Alpha3Code)
