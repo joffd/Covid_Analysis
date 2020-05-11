@@ -41,7 +41,8 @@ module Series =
 /// This module collects data from the online CSV and
 /// prepares usable time series for each country
 module DataCollection =
-     
+    
+    // More for fun (and self learning)
     type [<Measure>] ``1000 Population``
     type [<Measure>] Deaths
     type [<Measure>] Cases

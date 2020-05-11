@@ -2,3 +2,5 @@
 .fake
 .ionide
 packages
+.metals/metals.h2.db
+.metals/metals.log
