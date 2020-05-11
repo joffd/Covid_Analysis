@@ -42,10 +42,14 @@ let graphDeathRate =
     |> fun (labels, chart) -> Chart.WithLabels labels chart
 
 graphDeathRate
+|> Chart.WithSize (1200, 700)
 |> Chart.Show
 
 
-/// Graph 2: Same start date
+/// Graph 2: Same start date defined by the function below
+/// The idea is to compare how the situation evolves between
+/// different countries using the same starting point, here
+/// when the death rate reaches 0.01 death / 1000 Pop.
 let filterRule =
     fun _ v -> v >= 0.01<Deaths/``1000 Population``>
 
